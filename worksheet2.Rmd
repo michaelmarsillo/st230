@@ -1,0 +1,285 @@
+---
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1cm"
+header-includes:
+- \newcommand{\bcenter}{\begin{center}}
+- \newcommand{\ecenter}{\end{center}}
+output: pdf_document
+#output: html_document
+---
+
+```{r setup0, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\bcenter
+# ST230 Lab Assignment 2 R Worksheet
+\ecenter
+
+Recall: to execute a code chunk, push the run button (which looks like a play button) in the top right of the code chunk. Alternatively, pressing "Ctrl+Shift+Enter" when the cursor is in the code chunk will execute the code within.
+
+Code chunks will always start with `'''{r}` and end with `'''`.  If necessary, to insert a code chunk you can click on "Insert" along the tool bar and choose R or "Ctrl+Alt+I".  For the most part, code chunks will be given and you won't need to insert them into the file.
+
+Please fill in your nine-digit student ID below.
+
+```{r}
+student_id <- 169057769
+
+# Ignore the next line of code:
+if (!is.null(student_id)) {set.seed(student_id)} else {set.seed(16632)}
+```
+
+### ROULETTE SIMULATION
+
+Roulette is a popular casino game where a ball spins on a circular wheel and lands on one of the numbers $00, 0, 1, 2, 3,...,36$ (i.e. there are 38 numbers on the wheel). Each of the numbers also takes on one of the colours green, red, or black: 
+
+ - Green Numbers: 0, 00
+ - Red Numbers: 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36
+ - Black Numbers: 2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35
+
+The idea of the game is to guess where the ball will land. There are several ways to guess. You can guess the:
+
+ - Number: 00, 0, 1, 2, 3,..., 36 
+ - Colour: Red, Black 
+ - Parity: Even (2, 4, 6,...,36), Odd (1, 3, 5,...,35)
+ - High_Low: Low (1, 2, 3,...,18), High (19, 20, 21,...,36)
+ - Dozen: 1st 12 (1, 2, 3,...,12), 2nd 12 (13, 14, 15,...,24), 3rd 12 (25, 26, 27,...,36)
+ - Column: 1st Column (1, 4, 7,...,34), 2nd Column (2, 5, 8,...,35), 3rd Column (3, 6, 9,...,36)
+
+The following code represents a function in `R` that simulates the $n$ outcomes of a Roulette game. The results show a table of the outcomes with it's classifications (Number, Colour, Parity, High_Low, Dozen, and Column).
+
+Execute the code chunk before continuing.
+
+```{r, echo=FALSE}
+simulate_roulette <- function(n) {
+  # Define the wheel
+  wheel <- c("00",0:36)
+  
+  # Define colour mapping
+  red_numbers <- c(1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36)
+  black_numbers <- c(2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35)
+  
+  # Simulate spins
+  results <- sample(wheel, size = n, replace = TRUE)
+  
+  # Assign colours
+  colours <- sapply(results, function(x) {
+    if (x %in% red_numbers) {
+      "Red"
+    } else if (x %in% black_numbers) {
+      "Black"
+    } else {
+      NA
+    }
+  })
+  
+  # Assign parity
+  parity <- sapply(results, function(x) {
+    if (x %in% red_numbers || x %in% black_numbers) {
+      if (as.numeric(x) %% 2 ==0) {
+        "Even"
+      } else {
+        "Odd"
+      }
+    } else {
+      NA
+    }
+  })
+  
+  # Assign dozens
+  dozen <- sapply(results, function(x) {
+    if (x %in% red_numbers || x %in% black_numbers) {
+      if (as.numeric(x) < 13) {
+        "1st 12"
+      } else if (as.numeric(x) < 27) {
+        "2nd 12"
+      } else {
+        "3rd 12"
+      }
+    } else {
+      NA
+    }
+  })
+  
+  # Assign column
+  column <- sapply(results, function(x) {
+    if (as.numeric(x) %in% seq(1,34,3)) {
+      "1st Column"
+    } else if (as.numeric(x) %in% seq(2,35,3)) {
+      "2nd Column"
+    } else if (as.numeric(x) %in% seq(3,36,3)) {
+      "3rd Column"
+    } else {
+      NA
+    }
+  })
+  
+  # Assign high_low
+  high_low <- sapply(results, function(x) {
+    if (as.numeric(x) %in% 19:36) {
+      "High"
+    } else if (as.numeric(x) %in% 1:18) {
+      "Low"
+    } else {
+      NA
+    }
+  })
+  
+  # Create data frame
+  data.frame(Number = results, Colour = colours, Parity = parity, High_Low = high_low, Dozen = dozen, Column = column)
+}
+```
+
+**Pre-Lab Exercise - ROULETTE SIMULATION**
+
+Use the `simulate_roulette()` function to simulate 500 plays of roulette in the code chunk below and store the result in `roulette_plays`.
+
+If done correctly, `roulette_plays` will have six columns (Number, Colour, Parity, High_Low, Dozen, Column) and 500 rows. In order to apply the table command to the results, a column must be specified. For example, to tabulate the data based on `Colour`, apply the `table()` command to `roulette_plays$Colour`.
+
+Use the `table()` command to tabulate the `Column` data in `roulette_plays`. On a separate line, wrap the `table()` command in the `barplot()` command to generate a barplot of the `Column` data from `roulette_plays`
+
+```{r,out.width='30%',fig.align='center'}
+
+roulette_plays <- simulate_roulette(500)
+
+table <- table(roulette_plays$Column)
+barplot(table(roulette_plays$Column))
+
+```
+
+Based on the tabulated results of `roulette_plays`, calculate the SIMULATED probability (or relative frequency) of getting a first third. Store the result in `simulated`. 
+Note: last lab, the `sum()` command was used to count occurrences in a vector. In this case, an extra option - `na.rm=TRUE` must be added to the `sum()` command. For example, to count the number of `Red` numbers in `roulette_plays`, `sum(roulette_plays$Colour=="Red",na.rm=TRUE)` will do it.
+
+What is the THEORETICAL probability of getting a first third? Store the result in `theoretical`.
+
+```{r}
+simulated <- sum(roulette_plays$Dozen=="1st 12", na.rm=TRUE) / 500
+theoretical <- 12 / 38
+
+```
+
+### THE MONTY HALL PROBLEM
+
+Suppose that you are on a game show and must randomly select one of three doors.  Behind one of the doors is a new car and behind each of the other two doors is a goat. Once you select a door, the host opens one of the remaining doors to reveal a goat. The host then offers you the opportunity to keep the prize behind the unopened door you chose or change your choice to the other door that remains unopened.  What should you do?
+
+Read through the code and comments below to: 
+  i) understand what each line of code represents and 
+  ii) learn how to run the simulation of the game a single time and multiple times. 
+
+Once read through, run the code to define the prize(...) function.
+
+```{r, echo=FALSE}
+# Code below creates a function simulating the game.
+prize <- function(CHOICE = 1,CHANGE = "N",PLAYS = 1) {
+  # Define an empty vector to store the results of the game:
+  results <- c()
+  # For the number of PLAYS, play the game
+  for (i in 1:PLAYS) {
+  # Randomly select a door for the car to be behind:
+  car <- sample(1:3,1)
+  if (CHOICE!=car & CHANGE == "Y") {
+      results<- c(results,"WIN_CAR")
+    } else if (CHOICE==car & CHANGE=="N") {
+      results<- c(results,"WIN_CAR")
+    } else {
+      results<- c(results,"WIN_GOAT")
+    }
+  }
+  return(results)
+}
+```
+
+Once you've run the code above, `prize(CHOICE,CHANGE,PLAYS)` is a function with inputs/variables CHOICE, CHANGE and PLAYS where:
+
+ i) `CHOICE` = 1, 2, or 3 (i.e. the door you initially select) and
+ ii) `CHANGE` = "Y" or "N" including the " "  
+ (i.e. whether you want to change doors - "Y" (yes) - or not - "N" - when given the opportunity by the host)
+ iii) `PLAYS` represents the number of times you'd like to play. The default is 1.
+
+For example, `prize(2,"N",1)` will run the simulation once with the second door chosen and no change.
+
+**Pre-Lab Exercise - THE MONTY HALL PROBLEM**
+
+Run a simulation of one iteration of the game. Choose whatever door you like (1, 2, or 3) and make a decision to change or not ("Y" or "N").
+
+```{r}
+result <- prize(1, "Y", 1)
+
+```
+
+Run 10 iterations/simulations of the game using the same selections for CHOICE and CHANGE that you used in the exercise above. Store the results in `sims`.  
+Display: 
+  i) all of the outcomes, 
+  ii) a table summarizing the outcomes using `table()`, and 
+  iii) a bar chart of the outcomes using `barplot()`.
+
+
+```{r,out.width='30%',fig.align='center'}
+sims <- prize(1, "Y", 10)
+table <- table(sims)
+barplot(table(sims))
+
+```
+
+### Discrete Distributions
+
+Consider the following discrete probability distribution of $X$:
+$$\begin{array}{c|c|c|c|c|c} 
+x & 1 & 2 & 3 & 4 & 5 \\ 
+\hline 
+P(X=x) & 0.1 & 0.2 & 0.3 & 0.25 & 0.15
+\end{array}$$
+It can be helpful to store $X$ along with the probabilities as variables in `R`. Doing so makes certain calculations easy.
+
+Use the `c()` function to define `X` as the random variable outcomes and define `prob` to hold the associated probabilities. 
+
+```{r}
+X <- c(1, 2, 3, 4, 5)
+prob <- c(0.1, 0.2, 0.3, 0.25, 0.15)
+
+```
+
+Operations on variables defined using `c()` are fairly predictable. Run the following code chunk to see how different operations work:
+
+```{r, echo=FALSE,eval=FALSE}
+a <- c(1,2,3)
+b <- c(4,5,6)
+
+# multiplying `a` and `b` results in "position-wise" multiplication:
+a*b
+
+# squaring `a` results in squaring each value of `a`:
+a^2
+
+# applying `sum()` to `a` adds up the values of `a`:
+sum(a)
+
+# applying `sqrt()` to `sum(a)` adds up the values of `a` and determines the square root:
+sqrt(sum(a))
+```
+
+Use the functions demonstrated above to calculate the expected value, variance and standard deviation of $X$. Store the results in variables named `expect`, `vari`, and `stand` respectively.
+
+```{r}
+expect <- sum(X * prob)
+vari <- sum(X^2 * prob) - expect^2
+stand <- sqrt(vari)
+
+```
+
+Finally, `barplot()` can be used to picture the distribution. Run the following code chunk to see the result.
+
+```{r,out.width='30%',fig.align='center'}
+# barplot has a names.arg option for labeling purposes.
+barplot(prob,names.arg = X)
+```
+
+
+### Submission Instructions
+
+1. Save this file. (Quick key combo for that is "control" (or "command" on a Mac) and "s")
+2. Run the following code chunk to produce a pdf.
+3. Both of these files are likely in the "Downloads" folder (unless you moved them). Check the contents of each file and upload both the Rmd and pdf files to Gradescope.
+
+``` {r, echo=FALSE ,eval=FALSE}
+rmarkdown::render(rstudioapi::getSourceEditorContext()$path,output_format = "pdf_document")
+```
