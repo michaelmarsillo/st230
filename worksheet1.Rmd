@@ -1,0 +1,215 @@
+---
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1cm"
+header-includes:
+- \newcommand{\bcenter}{\begin{center}}
+- \newcommand{\ecenter}{\end{center}}
+output: pdf_document
+#output: html_document
+---
+
+```{r setup0, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\bcenter
+# ST230 Lab Assignment 1 R Worksheet
+\ecenter
+
+Before each lab, an R worksheet like this one will be available on MyLearningSpace. Each worksheet will demonstrate R code that will be used in the coming lab.  
+**It's important that you work through the worksheet before the lab.** 
+
+Worksheets will be available as R markdown files (file extension *.Rmd) and are to be opened in RStudio. Plain text can be input in any of the white spaces. R code may be entered in any of the grey spaces between the commands '''{r} and '''. These areas are called code chunks. 
+
+```{r comments}
+# This is inside a code chunk.
+# Furthermore, the '#' is used for comments and turns the text green. 
+# Comments are not executed when running the contents of a code chunk.
+# Comments are important - read them!
+```
+
+To execute a code chunk, push the run button (which looks like a play button) in the top right of the code chunk. Alternatively, pressing "Ctrl+Shift+Enter" when the cursor is in the code chunk will execute the code within.
+
+The necessary code chunks will generally be given. If you would like to insert an additional code chunk, you can simply type '''{r} and ''' (with a new line in between) or use the quick key combination "Ctrl"+"Alt"+"I".
+
+## Defining Variables
+
+- To assign a scalar (i.e. a number) or a vector (i.e. a list of numbers) a variable name in R use "<-" (less than symbol followed by minus symbol)
+- Vectors are defined using the `c()` command
+
+### Example 1
+
+Execute the code chunk below. Notice that when X, Y and S are defined the results are only displayed by typing "X", "Y" or "S" afterwards.
+
+```{r}
+# Assign the value 2 to X:
+X <- 2
+# Display X
+X 
+# Define Y as a vector containing the values 1,2,3,4
+Y <- c(1,2,3,4) 
+# Display Y
+Y
+# Values of a vector need not be numbers. 
+# For example, S is defined as the sample space from example 1.1 (Family Planning) in the lecture notes:
+S <- c("MMM","FFF","MFM","FMM","MMF","MFF","FMF","FFM")
+# Display S
+S
+```
+
+### Question: Sample Space and Events
+
+Consider the following example:  
+Suppose that vehicles taking a particular freeway exit can turn right (R), turn left (L), or go straight (S). Consider observing the direction for each of three successive vehicles.
+
+ a. List all outcomes in the event $A$ that all three vehicles go in the same direction.
+ b. List all outcomes in the event $B$ that all three vehicles take different directions.
+ c. List all outcomes in the event $C$ that exactly two of the three vehicles turn right.
+ d. List all outcomes in the event $D$ that exactly two vehicles go in the same direction.
+
+Define each of the events as vectors in the code chunk below. Use the given names.  
+For example, part a would be `A <- c("LLL","RRR","SSS")`.
+
+```{r}
+# Replace "NULL" with the proper code
+A <- c("LLL", "RRR", "SSS")
+B <- c("LRS", "LSR", "RLS", "RSL", "SLR", "SRL")
+C <- c("RRL", "RRS", "RLR", "RSR", "LRR", "SRR")
+D <- c("LLR", "LLS", "LRL", "LSL", "RLL", "SLL","RRL", "RRS", "RLR", "RSR", "LRR", "SRR","SSR", "SSL", "SRS", "SLS", "LSS", "RSS")
+
+```
+
+R is able to preform basic set operations: 
+ 
+ - `union(x,y)` produces the union of sets `x` and `y`
+ - `intersect(x,y)` produces the intersection of sets `x` and `y`
+ - `setdiff(x,y)` produces the values in set `x` that are not in set `y`
+ 
+Use the events defined in the previous code chunk to define event $E$ as $C$ union $D$ and event $G$ as $C$ intersect $D$ in the following code chunk.  
+For example, $E$ would be defined by: `E <- union(C,D)`.
+
+```{r}
+# Replace "NULL" with the proper code
+E <- union(C, D)
+G <- intersect(C, D)
+
+```
+
+## Basic Functions
+
+As with many programming languages, R has many functions available for use. So far this worksheet has made use of the functions `c()`, `union()` and `intersect()`. To see all the details of a function simply type "?" before the function name and execute the command.
+
+### Question: Help `?`
+
+If you want help on the `c()` function for example, simply type `?c` and execute the code chunk.  
+Type `?c` in the following code chunk and run it. The documentation should appear in the bottom right corner of this window.
+
+```{r, echo=FALSE}
+?C
+
+```
+
+Read the description. What could the letter 'c' stand for in this function?  
+**Type your answer below:**  
+Sets the "contrasts" attribute for the factor.
+
+
+## Permutations and Combinations
+
+Recall that the number of **permutations** (order matters) of $r$ objects selected from a set of $n>r$ distinct objects is:
+$$_nP_r = n(n-1)\cdots(n-r-1) = \dfrac{n!}{(n-r)!}$$
+Recall that the number of **combinations** (order doesn't matter) of $r$ objects selected from a set of $n>r$ distinct objects is :
+$$_nC_r = \binom{n}{r} = \dfrac{n(n-1)\cdots(n-r-1)}{r!} = \dfrac{n!}{r!(n-r)!}$$
+R comes with a `factorial()` function, `factorial(n)` will calculate $n!$. This can be used to calculate permutations and combinations in R.
+
+### Example 2
+
+From an alphabet consisting of 10 digits, 26 lower-case and 26 upper-case letters, how many different 8-character passwords can one create? 
+
+There are 10 + 26 + 26 = 62 different characters. The number of different 8-character passwords is: $$\dfrac{62!}{(62-8)!}$$
+
+In R the calculation would be:
+
+```{r}
+# Store the number of passwords in a variable called "num_of_8_char_pass"
+num_of_8_char_pass <- factorial(62)/factorial(62-8) # or: factorial(62)/factorial(54)
+# Display the number of described passwords:
+num_of_8_char_pass
+```
+
+### Question: Counting
+
+Suppose a science council has one student representative from each of the following departments: chemistry, mathematics, biology, physics, and psychology. In how many ways can:
+
+ a. Calculate the number of ways a president and vice president can be appointed from the science council. Store the result in a variable named `total_pres`.
+ b. Calculate the number of ways a president, vice president and treasurer can be appointed from the science council. Store the result in a variable named `total_office`.
+ c. Calculate the number of ways two members from the science council could be chosen to serve on the Dean's Council. Store the result in a variable named `total_dean`.
+
+Preform each of the calculations in the code chunk that follows. **Use the specified variable names.**
+
+```{r}
+# Replace "NULL" with the proper code
+total_pres <- factorial(5) / factorial(5-2) # 2 roles
+total_office <- factorial(5) / factorial(5-3) # 3 roles
+total_dean <- factorial(5) / (factorial(2) * factorial(3)) # combinations of 2
+
+
+```
+
+### Question: Rolling Two Dice
+
+Creating R functions (which can be used for simulations) is beyond the scope of this course. You will, however, be asked to run functions (and / or simulations) and analyze results.
+
+An example of an R function can be found in the following code chunk. Read the comments carefully to understand the code.
+
+```{r}
+# This code is a function that simulates n rolls of two fair multi-sided dice. 
+# Each roll, the dice results are added together and stored in a vector called results.
+dice_roll <- function(sides=6,rolls=1) {
+  # initialize the results vector (empty to begin)
+  results <- c()
+  # initiate a for loop to run 'rolls' times
+  for (i in 1:rolls) {
+    # simulate the rolling of two die (randomly select two values from {1,2,3,..,'sides'})
+    roll <- sample(1:sides,size=2,replace=TRUE)
+    # sum the results of the roll (result will be a number between 2 and 2*sides) and put the total in the results vector
+    results <- c(results,sum(roll))
+  }
+  # print the results
+  return(results)
+}
+# Execute this code chunk before proceeding.
+```
+
+Once the previous code chunk has been run, the function `dice_roll()` is defined in our environment and can be used in subsequent code chunks. Type `dice_roll(sides = 8, rolls = 1)` and `dice_roll(sides = 9, rolls = 10)` in the following code chunk and run it to simulate one roll and ten rolls. Take a moment to understand the outcome.
+
+```{r}
+dice_roll(sides = 8, rolls = 1)
+dice_roll(sides = 9, rolls = 10)
+
+```
+
+Complete the following tasks in the next code chunk and execute it:
+
+ 1. Use the `dice_roll()` function to simulate 500 rolls of two 9-sided dice. Store the results in `rolls_500`.
+ 2. `table(rolls_500)` will provide a summary of the outcomes stored in `rolls_500`; view the summary.
+ 3. `barplot(table(rolls_500))` will generate a bar chart of the outcomes stored in `rolls_500`; view the barplot.
+
+```{r}
+# Replace "NULL" with the proper code
+# Use rolls_500 to complete the stated tasks:
+rolls_500 <- dice_roll(sides = 9, rolls = 500)
+table(rolls_500)
+barplot(table(rolls_500))
+
+
+```
+
+### Submission Instructions
+
+1. Save this file. (Quick key combo for that is "control" (or "command" on a Mac) and "s")
+2. Run the following code chunk to produce a pdf.
+3. Both of these files are likely in the "Downloads" folder (unless you moved them). Check the contents of each file and upload both the Rmd and pdf files to Gradescope.
+
+``` {r, echo=FALSE ,eval=FALSE}
+rmarkdown::render(rstudioapi::getSourceEditorContext()$path,output_format = "pdf_document")
+```
