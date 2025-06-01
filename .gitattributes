@@ -1,0 +1,2 @@
+# Treat .Rmd files as R for GitHub language stats
+*.Rmd linguist-language=R
