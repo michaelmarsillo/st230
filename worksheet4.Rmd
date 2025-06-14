@@ -1,0 +1,203 @@
+---
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1cm"
+header-includes:
+- \newcommand{\bcenter}{\begin{center}}
+- \newcommand{\ecenter}{\end{center}}
+output: pdf_document
+#output: html_document
+---
+
+```{r setup0, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\bcenter
+# ST230 Lab Assignment 4 R Worksheet
+\ecenter
+
+Recall: to execute a code chunk, push the run button (which looks like a play button) in the top right of the code chunk. Alternatively, pressing "Ctrl+Shift+Enter" when the cursor is in the code chunk will execute the code within.
+
+Code chunks will always start with `'''{r}` and end with `'''`.  If necessary, to insert a code chunk you can click on "Insert" along the tool bar and choose R or "Ctrl+Alt+I".  For the most part, code chunks will be given and you won't need to insert them into the file.
+
+Please fill in your nine-digit student ID below.
+
+```{r}
+student_id <- 169057769
+
+# Ignore the next line of code:
+if (!is.null(student_id)) {set.seed(student_id)} else {set.seed(16632)}
+```
+
+### Data in R
+
+There are many ways to import data into R. To do this, the user must understand some things about file paths and relative file locations. Although these things are not complicated, this section focuses on working with data rather than importing data. Luckily, R has several datasets that come with the installation! Running `library(help="datasets")` in the console will show a list of datasets that come with the installation of R.
+
+The `data()` function is used to load one of R's datasets. For example, the "iris" dataset has five variables with 150 observations. Four of the variables measure lengths and widths of different parts of the flower, the fifth variable indicates the species of iris. Execute the following code chunk to view the dataset.
+
+```{r, iris.data.load,purl=FALSE,eval=FALSE}
+# Load the "iris" dataset to a variable called iris
+data("iris")
+# Print dataset
+iris
+
+# In the lab, `iris <- read.csv()` will likely be used to load a dataset in place of data()
+
+```
+
+Once a dataset is imported into R, the variables of the dataset can be accessed as vectors by using `data_set_name$variable_name`. This allows the user to calculate statistics on different variables or create visuals of the data. Run the following code chunk to view a specific variable from the iris dataset.
+
+```{r, iris.data.var,purl=FALSE,eval=FALSE}
+# This extracts the data from the `Petal.Length` variable in the `iris` dataset. 
+# The result is treated as a vector in R. 
+iris$Petal.Length
+```
+
+### Data Visualization
+
+There are a number of ways to visualize data in R. This worksheet demonstrates some basic plotting commands in base R. There are many options that can be added to the demonstrated plotting commands. If additional options interest you, it is easy to find info online or by using `?` or using chatgpt. (Note: The ggplot2 package in R is a more robust method of plotting but we will leave that for another time!).
+
+Below is a list of some basic plots that can be done in R. When using any of the commands, substitute appropriately for the CAPITAL_LETTERS.
+
+For *categorical data*, the `table()` function is used inside the plotting function to generate the frequencies of each category.
+
+  Pie Chart:          `pie(table(VECTOR))`
+  Bar Chart:          `barplot(table(VECTOR))`
+
+For *quantitative data*, the basic plotting function can be applied directly.
+
+  Histogram:          `hist(VECTOR)`
+  Boxplot:            `boxplot(VECTOR)`
+
+#### Data Visualization: Exercise
+
+In a previous code chunk, R's `iris` dataset was loaded and stored it in a variable called `iris`.
+
+ a) Create a histogram of the `Petal.Length` variable in the `iris` dataset. Recall: `iris$Petal.Length` is the vector of data.
+ b) Create a boxplot of the `Petal.Length` variable.
+ c) Create a bar chart of the `Species` variable.
+ d) Create a pie chart of the `Species` variable.
+
+```{r, data.viz}
+#Part a)
+hist(iris$Petal.Length, main = "Histogram of Petal Length", xlab = "Petal Length")
+
+#Part b)
+boxplot(iris$Petal.Length, main = "Boxplot of Petal Length", ylab = "Petal Length")
+
+#Part c)
+barplot(table(iris$Species), main = "Bar Chart of Species", ylab = "Count")
+
+#Part d)
+pie(table(iris$Species), main = "Pie Chart of Species")
+
+# Once all four plots are ready, run the code chunk. You will be able to flip through the different plots by clicking on their specific icons below.
+
+```
+
+
+### Working With Imported Data
+
+R has many pre-defined functions to calculate statistics.  A brief list of some of the commands are given below (by no means is this list all-encompassing).
+
+  `length(VECTOR)`    gives the length of a vector
+  `names(VECTOR)`     gives the names of a vector
+  `max(VECTOR)`       gives largest value of a vector
+  `min(VECTOR)`       gives smallest value of a vector
+  `mean(VECTOR)`      gives the average value of a vector
+  `median(VECTOR)`    gives the "middle" value of a vector
+  `sum(VECTOR)`       gives the sum of the values in a vector
+  `sd(VECTOR)`        gives the standard deviation in a vector
+  `summary(VECTOR)`   gives summary statistics of a vector (5 number summary plus the mean)
+ 
+#### Working With Imported Data: Exercise
+
+Complete the following tasks in the code chunk below:
+
+ a) Apply `names()` to the `iris` dataset to produce the variable names. Store the result in a variable called `vars`.
+ b) Use `length()` to determine the number of observations in the `iris` dataset. Store the result in a variable called `n`.
+ c) Determine the mean `Sepal.Length`. Store the result in a variable called `mean.SL`.
+ d) Determine the median `Sepal.Length`. Store the result in a variable called `med.SL`.
+ e) Use `summary()` to determine the summary statistics of `Petal.Length`. Store the result in a variable called `summary.PL`.
+
+```{r, data.stats}
+# Part a)
+vars <- names(iris)
+# Part b)
+n <- length(iris$Sepal.Length)
+# Part c)
+mean.SL <- mean(iris$Sepal.Length)
+# Part d)
+med.SL <- median(iris$Sepal.Length)
+# Part e)
+summary.PL <- summary(iris$Petal.Length)
+
+```
+
+
+### Continuous Distributions (REVIEW)
+
+A previous worksheet introduced two common continuous distributions:
+
+Uniform                       unif(x,alpha,beta)
+Normal                        norm(x,mu,sigma)
+
+Recall: to use any of these distributions in R, you must precede them with:
+ - 'd' for the probability density function f(x) 
+ - 'p' for the cumulative distribution P(X<=x)
+ - 'q' to find quantiles (percentiles)
+ - 'r' to generate a random sample
+
+Consider the following example code:
+
+```{r}
+# Assume X ~ Normal(mu = 0,sigma = 1)
+# Calculates f(1); where f(x) is the normal pdf. 
+# This gives the height of the curve and is not a probability. 
+dnorm(1,0,1)
+# Calculates P(X < 1) 
+pnorm(1,0,1)
+# Determines x so that P(X < x) = 0.1 (quantile)
+qnorm(0.1,0,1)
+# Generates 10 random samples from the indicated normal distribution.
+rnorm(10,0,1)
+```
+
+### Some Useful R Functions
+
+There are two functions that will be useful this week. 
+
+  1. `replicate()` is used to do a process a specified number of times. 
+      e.g. `replicate(100,rnorm(10,0,1))` will produce 100 samples of size 10 from the standard normal distribution
+  
+  2. `colMeans()` is used to determine the mean of each column of a matrix.
+      e.g. If `M` is a matrix with 10 rows and 100 columns, `colMeans(M)` will be a vector of length 100 where each value is the mean of one of the columns in `M`.
+
+### Sampling Distribution of the Mean: Exercise 
+
+In the following code chunk, complete the following tasks:
+
+ a. Use `runif()` so produce a sample of size 30 for Uniform[0,1]. Store the result in `sample1`.
+ b. Use `replicate()` to produce 1000 samples of size 30 from a uniform distribution. Store the result in `samples`.
+ c. After part (b) is complete, `samples` will be a matrix where each column is a sample. Use `colMeans()` to determine the mean of each sample. Store the result in `sample_means`.
+ d. Produce a histogram of `sample_means`.
+
+```{r, unif.sample}
+# a. 
+sample1 <- runif(30, 0, 1)
+# b. 
+samples <- replicate(1000, runif(30, 0, 1))
+# c. 
+sample_means <- colMeans(samples)
+# d. 
+hist(sample_means, main = "Sampling Distribution of the Mean", xlab = "Sample Mean")
+```
+
+### Submission Instructions
+
+1. Save this file. (Quick key combo for that is "control" (or "command" on a Mac) and "s")
+2. Run the following code chunk to produce a pdf.
+3. Both of these files are likely in the "Downloads" folder (unless you moved them). Check the contents of each file and upload both the Rmd and pdf files to Gradescope.
+
+``` {r, echo=FALSE ,eval=FALSE}
+rmarkdown::render(rstudioapi::getSourceEditorContext()$path,output_format = "pdf_document")
+```
