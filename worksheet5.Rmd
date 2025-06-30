@@ -1,0 +1,132 @@
+---
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1cm"
+header-includes:
+- \newcommand{\bcenter}{\begin{center}}
+- \newcommand{\ecenter}{\end{center}}
+output: pdf_document
+#output: html_document
+---
+
+```{r setup0, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\bcenter
+# ST230 Lab Assignment 5 Prep
+\ecenter
+
+$>$bworksheet
+Recall: to execute a code chunk, push the run button (which looks like a play button) in the top right of the code chunk. Alternatively, pressing "Ctrl+Shift+Enter" when the cursor is in the code chunk will execute the code within.
+
+Code chunks will always start with `'''{r}` and end with `'''`.  If necessary, to insert a code chunk you can click on "Insert" along the tool bar and choose R or "Ctrl+Alt+I".  For the most part, code chunks will be given and you won't need to insert them into the file.
+$>$eworksheet
+
+### Confidence Intervals Involving the Sample Mean
+
+Confidence intervals have the general form:  (estimate - m,estimate + m), where m is the margin of error.
+
+For confidence intervals involving the sample mean:
+
+  estimate = (sample mean)
+  m = (critical value)(standard deviation of the population from which we are sampling)/sqrt(size of the sample)
+
+The Central Limit Theorem says that if the sample size is large, the sampling distribution of the sample mean is approximately normal regardless of the distribution of the population from which the samples come. This means that confidence intervals involving the sample mean involve *critical values* that are determined using percentiles of a normal distribution. If $X~N(0,1)$, `qnorm(0.1,0,1)` calculates $x$ so that $P(X<x) = 0.1$. 
+
+For a 100(1-alpha)\% C.I. the critical value involving the sample mean is: `qnorm(alpha/2,lower.tail=FALSE)`
+[Note: lower.tail=FALSE ensures that the z score is the one whose area to the right is alpha/2]
+
+#### Critical Values: Exercise
+
+In the code chunk below, use R to determine the critical values for a 95% and 97% confidence interval.
+
+```{r, CI.crit.val}
+# a. 
+crit_val_95 <- qnorm(0.05 / 2, lower.tail = FALSE)
+# b. 
+crit_val_97 <- qnorm(0.03 / 2, lower.tail = FALSE)
+
+crit_val_95
+crit_val_97
+
+```
+
+#### Confidence Interval: Exercise
+
+Here is one of the examples from class (Example 6.1.3): 
+We are interested in the mean IQ score of seventh-grade children in an Ontario school district. A SRS of 31 seventh-grade children's scores from the district where averaged and found to be: 105.84.
+
+Estimate the mean IQ score $\mu$ for all seventh-grade children in this Ontario school district by giving a 95\% confidence interval. Most IQ tests are designed so that $\sigma=15$, so we will make this assumption that $\sigma=15$ is known.
+
+Use R to determine the `lower.bound` and `upper.bound` of the specified confidence interval. That is, based on the data, we are 95\% confident that the mean IQ score for all seventh-grade children in this Ontario district is between `lower.bound` and `upper.bound`.
+
+```{r, CI.int}
+# Given values
+x_bar <- 105.84
+sigma <- 15
+n <- 31
+z <- qnorm(0.05 / 2, lower.tail = FALSE)  # 95% CI
+
+# Margin of error
+m <- z * (sigma / sqrt(n))
+
+# Confidence interval
+lower.bound <- x_bar - m
+upper.bound <- x_bar + m
+
+lower.bound
+upper.bound
+
+
+```
+
+### Hypothesis Testing Involving the Sample Mean
+
+Hypothesis tests determine the probability of generating specific sample data assuming a certain population parameter (assuming the null hypothesis is true). The probability that is calculated is called a $P$-value. If the $P$-value is smaller than the significance level $\alpha$, the null hypothesis is rejected. Alternatively, if the $P$-value is larger than the significance level $\alpha$, the null hypothesis is not rejected.
+
+When the population from which the samples are produced is normally distributed with mean $\mu$ and standard deviation $\sigma$, the sampling distribution of the mean is normally distributed with mean $\mu$ and standard deviation $\sigma / \sqrt{n}$. As a result, the standard normal distribution ($Z\sim N(0,1)$) is used to determine the $P$-value based on the *observed test statistic*: $z_0 = \dfrac{\overline{x} - \mu_0}{\sigma/\sqrt{n}}$.
+
+Suppose the null hypothesis is $H_0: \mu = \mu_0$, (for some number $\mu_0$). Given a sample of size $n$ with a sample mean of $\overline{x}$, there are three types of alternative hypotheses that can be tested. Each has a different $P$-value:
+
+ - $H_a: \mu <\mu_0$ results in a $P$-value of $P\left(Z<z_0\right)$.  
+ - $H_a: \mu >\mu_0$ results in a $P$-value of $P\left(Z>z_0\right)$.  
+ - $H_a: \mu \neq\mu_0$ results in a $P$-value of $2 P\left(Z<-\left|z_0\right|\right)$.
+ 
+In `R`, the `pnorm()` function can be used to calculate these $P$-values. 
+Recall: `pnorm(a)` = P(Z<a).
+
+#### Hypothesis Testing: Exercise
+
+Here is one of the examples from class: 
+In a previous example the IQ test scores of 31 seventh-grade children in an Ontario school district where examined. The sample mean was $\overline{x} = 105.84$. IQ scores follow a Normal distribution with standard deviation $\sigma = 15$. Treat these 31 children as an SRS of all seventh-grade children in this district. IQ scores in a broad population are supposed to have mean $\mu = 100$. Is there evidence that the mean in this district differs from 100?
+
+The null hypothesis is $H_0: \mu = 100$ and the alternative hypothesis is $H_a: \mu \neq 105.84$ 
+Determine the *observed test statistic* and *P-value* in the code chunk below:
+
+```{r}
+# Given values
+mu_0 <- 100
+x_bar <- 105.84
+sigma <- 15
+n <- 31
+
+# Calculate observed test statistic
+observed.test.statistic <- (x_bar - mu_0) / (sigma / sqrt(n))
+
+# Calculate two-tailed p-value
+p.value <- 2 * pnorm(-abs(observed.test.statistic))
+
+observed.test.statistic
+p.value
+
+
+```
+
+### Submission Instructions
+
+1. Save this file. (Quick key combo for that is "control" (or "command" on a Mac) and "s")
+2. Run the following code chunk to produce a pdf.
+3. Both of these files are likely in the "Downloads" folder (unless you moved them). Check the contents of each file and upload both the Rmd and pdf files to Gradescope.
+
+``` {r, echo=FALSE ,eval=FALSE}
+rmarkdown::render(rstudioapi::getSourceEditorContext()$path,output_format = "pdf_document")
+```
